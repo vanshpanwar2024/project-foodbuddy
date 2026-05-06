@@ -118,7 +118,7 @@ export default function FoodPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <FoodInput
-              value={values.food}
+              value={values.food || ""}
               onChange={(value) => setValue("food", value)}
               onSubmit={handleRecommend}
               isLoading={isLoading}

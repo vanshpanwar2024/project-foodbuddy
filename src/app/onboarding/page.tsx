@@ -43,12 +43,12 @@ import { toast } from "sonner";
 
 const schema = z.object({
   ageRange: z.string().min(1, "Select an age range."),
-  gender: z.string().optional(),
+  gender: z.string().optional().default(""),
   activityLevel: z.string().min(1, "Select an activity level."),
-  dietaryPreferences: z.array(z.string()).min(1, "Select preferences."),
-  goals: z.array(z.string()).min(1, "Select goals."),
-  allergies: z.string().optional(),
-  restrictions: z.string().optional(),
+  dietaryPreferences: z.array(z.enum(["vegetarian", "vegan", "non-vegetarian", "gluten-free", "keto", "high-protein"])).min(1, "Select preferences."),
+  goals: z.array(z.enum(["lose weight", "gain muscle", "eat balanced", "reduce sugar", "improve energy"])).min(1, "Select goals."),
+  allergies: z.string().optional().default(""),
+  restrictions: z.string().optional().default(""),
   budget: z.string().min(1, "Select a budget preference."),
 });
 
@@ -66,7 +66,7 @@ export default function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<OnboardingFormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     mode: "onTouched",
     defaultValues: {
       ageRange: "",
@@ -104,7 +104,7 @@ export default function OnboardingPage() {
   };
 
   const handleDemo = () => {
-    form.reset(DEMO_PREFERENCES);
+    form.reset(DEMO_PREFERENCES as any);
     goTo(steps.length - 1);
   };
 
@@ -256,9 +256,9 @@ export default function OnboardingPage() {
                       </CardHeader>
                       <MultiSelectChips
                         options={DIETARY_PREFERENCES}
-                        values={values.dietaryPreferences}
+                        values={values.dietaryPreferences || []}
                         onChange={(nextValue) =>
-                          setValue("dietaryPreferences", nextValue, {
+                          setValue("dietaryPreferences", nextValue as any, {
                             shouldValidate: true,
                           })
                         }
@@ -277,9 +277,9 @@ export default function OnboardingPage() {
                       </CardHeader>
                       <MultiSelectChips
                         options={GOALS}
-                        values={values.goals}
+                        values={values.goals || []}
                         onChange={(nextValue) =>
-                          setValue("goals", nextValue, {
+                          setValue("goals", nextValue as any, {
                             shouldValidate: true,
                           })
                         }
@@ -356,22 +356,22 @@ export default function OnboardingPage() {
                         </CardTitle>
                       </CardHeader>
                       <div className="grid gap-4 md:grid-cols-2">
-                        <SummaryCard title="Age range" value={values.ageRange} />
+                        <SummaryCard title="Age range" value={values.ageRange || ""} />
                         <SummaryCard
                           title="Activity level"
-                          value={values.activityLevel}
+                          value={values.activityLevel || ""}
                         />
                         <SummaryCard
                           title="Dietary preferences"
-                          value={values.dietaryPreferences}
+                          value={values.dietaryPreferences || []}
                         />
-                        <SummaryCard title="Goals" value={values.goals} />
-                        <SummaryCard title="Allergies" value={values.allergies} />
+                        <SummaryCard title="Goals" value={values.goals || []} />
+                        <SummaryCard title="Allergies" value={values.allergies || ""} />
                         <SummaryCard
                           title="Restrictions"
-                          value={values.restrictions}
+                          value={values.restrictions || ""}
                         />
-                        <SummaryCard title="Budget" value={values.budget} />
+                        <SummaryCard title="Budget" value={values.budget || ""} />
                       </div>
                       <Button
                         size="lg"
